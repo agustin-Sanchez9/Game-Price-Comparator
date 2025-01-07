@@ -7,3 +7,4 @@ import xbox
 game = 'stardew valley'
 
 steam.search(game)
+xbox.search(game)

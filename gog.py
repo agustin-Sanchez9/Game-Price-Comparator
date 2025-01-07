@@ -36,7 +36,3 @@ def search(game):
     print("DISCOUNT: " + discount)
     print("FINAL PRICE: " + finalPrice)
     print("///////////////////////////////////////////")
-
-g = 'stardew valley'
-
-search(g)
