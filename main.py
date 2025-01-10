@@ -2,7 +2,7 @@ import steam
 import gog
 import xbox
 
-game = 'stardew valley'
+game = 'baldurs gate 3'
 
 steam.search(game)
 gog.search(game)
