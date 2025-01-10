@@ -19,7 +19,7 @@ def search(game):
         try:
             page.locator("#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll").click()
         except Exception as e:
-            print(f"No se encontró el botón de cookies: {e}")
+            print(f"No se encontro el boton de cookies: {e}")
 
         # only after reload the prices will be correct
         page.reload()
@@ -31,14 +31,14 @@ def search(game):
     gameList = doc.find("div", class_="paginated-products-grid grid")
 
     if not gameList:
-        print("NO SE ENCONTRO EL JUEGO EN GOG.")
-        return
+        not_found_result ="GAME NOT FOUND ON GOG."
+        return not_found_result
 
     gameData = gameList.find("a")
 
     if not gameData:
-        print("NO SE ENCONTRO EL JUEGO EN GOG.")
-        return
+        not_found_result ="GAME NOT FOUND ON GOG."
+        return not_found_result
     
     gameTitle2 = gameData.find("product-title", class_="small")
     gameTitle = gameTitle2.find("span")
@@ -48,14 +48,18 @@ def search(game):
 
     if gameTitle:
         # some games dont have prices, that is why the else statement here
+        title = gameTitle.text
         price = gameOrPrice.text if gameOrPrice else (gameFinalPrice.text if gameFinalPrice else '-')
         discount = gameDiscount.text if gameDiscount else '-'
         finalPrice = gameFinalPrice.text if gameFinalPrice else '-'
 
-    print("///////////////GOG RESULTS///////////////")
-    print("TITLE: " + gameTitle.text)
-    print("ORIGINAL PRICE: " + price)
-    print("DISCOUNT: " + discount)
-    print("FINAL PRICE: " + finalPrice)
-    print("///////////////////////////////////////////")
+    # text result to send to main
+    result_text =(
+        f"GOG RESULT:\n"
+        f"TITLE: {title}\n"
+        f"ORIGINAL PRICE: {price}\n"
+        f"DISCOUNT: {discount}\n"
+        f"FINAL PRICE: {finalPrice}\n"
+    )
+    return result_text
 

@@ -27,14 +27,14 @@ def search(game):
     gameList = doc.find("div", class_="ModuleRow-module__row___N1V3E SearchProductGrid-module__productGrid___c2ZVh")
 
     if not gameList:
-        print("NO SE ENCONTRO EL JUEGO EN XBOX.")
-        return
+        not_found_result ="GAME NOT FOUND ON XBOX."
+        return not_found_result
 
     gameData = gameList.find("a")
 
     if not gameData:
-        print("NO SE ENCONTRO EL JUEGO EN XBOX.")
-        return
+        not_found_result ="GAME NOT FOUND ON XBOX."
+        return not_found_result
 
     gameTitle = gameData.find("span", class_="ProductCard-module__title___nHGIp typography-module__xdsBody2___RNdGY")
     gameOrPrice = gameData.find("span", class_="Price-module__originalPrice___XNCxs")
@@ -46,13 +46,17 @@ def search(game):
 
     if gameTitle:
         # some games dont have prices, that is why the else statement here
+        title = gameTitle.text
         price = gameOrPrice.text if gameOrPrice else (gameFinalPrice.text if gameFinalPrice else '-')
         discount = gameDiscount.text if gameDiscount else '-'
         finalPrice = gameFinalPrice3.text if gameFinalPrice3 else '-'
 
-    print("///////////////XBOX RESULTS///////////////")
-    print("TITLE: " + gameTitle.text)
-    print("ORIGINAL PRICE: " + price)
-    print("DISCOUNT: " + discount)
-    print("FINAL PRICE: " + finalPrice)
-    print("///////////////////////////////////////////")
+    # text result to send to main
+    result_text =(
+        f"XBOX RESULT:\n"
+        f"TITLE: {title}\n"
+        f"ORIGINAL PRICE: {price}\n"
+        f"DISCOUNT: {discount}\n"
+        f"FINAL PRICE: {finalPrice}\n"
+    )
+    return result_text

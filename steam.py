@@ -17,14 +17,14 @@ def search(game):
     gameList = doc.find("div", id="search_resultsRows")
 
     if not gameList:
-        print("NO SE ENCONTRO EL JUEGO EN STEAM.")
-        return
+        not_found_result ="GAME NOT FOUND ON STEAM."
+        return not_found_result
 
     gameData = gameList.find("a")
 
     if not gameData:
-        print("NO SE ENCONTRO EL JUEGO EN STEAM.")
-        return
+        not_found_result ="GAME NOT FOUND ON STEAM."
+        return not_found_result
 
     gameTitle = gameData.find("span", class_="title")
     gameOrPrice = gameData.find("div", class_="discount_original_price")
@@ -33,15 +33,20 @@ def search(game):
 
     if gameTitle:
         # some games dont have prices, that is why the else statement here
+        title = gameTitle.text
         price = gameOrPrice.text if gameOrPrice else (gameFinalPrice.text if gameFinalPrice else '-')
         discount = gameDiscount.text if gameDiscount else '-'
         finalPrice = gameFinalPrice.text if gameFinalPrice else '-'
 
-    print("///////////////STEAM RESULTS///////////////")
-    print("TITLE: " + gameTitle.text)
-    print("ORIGINAL PRICE: " + price)
-    print("DISCOUNT: " + discount)
-    print("FINAL PRICE: " + finalPrice)
-    print("///////////////////////////////////////////")
+    
+    # text result to send to main
+    result_text =(
+        f"STEAM RESULT:\n"
+        f"TITLE: {title}\n"
+        f"ORIGINAL PRICE: {price}\n"
+        f"DISCOUNT: {discount}\n"
+        f"FINAL PRICE: {finalPrice}\n"
+    )
+    return result_text
 
     
