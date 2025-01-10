@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup as bs4
-import requests
+from playwright.sync_api import sync_playwright
 
 
 def setUrl(gameName):
@@ -11,10 +11,30 @@ def setUrl(gameName):
 def search(game):
     url = setUrl(game)
 
-    result = requests.get(url).text
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        context = browser.new_context(
+            geolocation={"longitude": -34.6314592, "latitude": -58.3609427},
+            permissions=["geolocation"])
+        page = context.new_page()
+        page.goto(url)
+
+        result = page.content()
+        page.close()  
+        browser.close()
+
     doc = bs4(result, "html.parser")
     gameList = doc.find("div", class_="ModuleRow-module__row___N1V3E SearchProductGrid-module__productGrid___c2ZVh")
+
+    if not gameList:
+        print("NO SE ENCONTRO EL JUEGO EN XBOX.")
+        return
+
     gameData = gameList.find("a")
+
+    if not gameData:
+        print("NO SE ENCONTRO EL JUEGO EN XBOX.")
+        return
 
     gameTitle = gameData.find("span", class_="ProductCard-module__title___nHGIp typography-module__xdsBody2___RNdGY")
     gameOrPrice = gameData.find("span", class_="Price-module__originalPrice___XNCxs")
@@ -22,13 +42,7 @@ def search(game):
     gameFinalPrice = gameData.find("span", class_="Price-module__boldText___1i2Li Price-module__moreText___sNMVr ProductCard-module__price___cs1xr")
     gameFinalPrice2 = gameData.find("span", class_="Price-module__boldText___1i2Li Price-module__moreText___sNMVr ProductCard-module__price___cs1xr Price-module__listedDiscountPrice___A-+d5")
 
-
-    # the class for the 
-    if gameFinalPrice:
-        gameFinalPrice3 = gameFinalPrice
-    elif gameFinalPrice2:
-        gameFinalPrice3 = gameFinalPrice2
-
+    gameFinalPrice3 = gameFinalPrice if gameFinalPrice else gameFinalPrice2
 
     if gameTitle:
         # some games dont have prices, that is why the else statement here

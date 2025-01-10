@@ -15,7 +15,16 @@ def search(game):
     result = requests.get(url).text
     doc = bs4(result, "html.parser")
     gameList = doc.find("div", id="search_resultsRows")
+
+    if not gameList:
+        print("NO SE ENCONTRO EL JUEGO EN STEAM.")
+        return
+
     gameData = gameList.find("a")
+
+    if not gameData:
+        print("NO SE ENCONTRO EL JUEGO EN STEAM.")
+        return
 
     gameTitle = gameData.find("span", class_="title")
     gameOrPrice = gameData.find("div", class_="discount_original_price")

@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup as bs4
-import requests
-import time
+from playwright.sync_api import sync_playwright
 
 
 def setUrl(gameName):
@@ -11,12 +10,36 @@ def setUrl(gameName):
 def search(game):
     url = setUrl(game)
 
-    result = requests.get(url).text
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        page.goto(url)
+        
+        # method to accept cookies, otherwise it will not show regional prices
+        try:
+            page.locator("#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll").click()
+        except Exception as e:
+            print(f"No se encontró el botón de cookies: {e}")
 
+        # only after reload the prices will be correct
+        page.reload()
+        result = page.content()
+        page.close()  
+        browser.close()
+        
     doc = bs4(result, "html.parser")
     gameList = doc.find("div", class_="paginated-products-grid grid")
+
+    if not gameList:
+        print("NO SE ENCONTRO EL JUEGO EN GOG.")
+        return
+
     gameData = gameList.find("a")
 
+    if not gameData:
+        print("NO SE ENCONTRO EL JUEGO EN GOG.")
+        return
+    
     gameTitle2 = gameData.find("product-title", class_="small")
     gameTitle = gameTitle2.find("span")
     gameOrPrice = gameData.find("span", class_="base-value ng-star-inserted")
@@ -30,9 +53,9 @@ def search(game):
         finalPrice = gameFinalPrice.text if gameFinalPrice else '-'
 
     print("///////////////GOG RESULTS///////////////")
-    print("URL: " + url)
     print("TITLE: " + gameTitle.text)
     print("ORIGINAL PRICE: " + price)
     print("DISCOUNT: " + discount)
     print("FINAL PRICE: " + finalPrice)
     print("///////////////////////////////////////////")
+
