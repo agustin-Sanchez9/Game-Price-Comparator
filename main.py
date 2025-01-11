@@ -3,6 +3,11 @@ import gog
 import xbox
 import tkinter
 import threading
+import os
+
+# this is to make the main.exe work
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = ".local-browsers"
+
 
 def get_search():
     game = search_box.get()
